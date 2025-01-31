@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectFlow.Application\ProjectFlow.Application.csproj" />
+    <ProjectReference Include="..\ProjectFlow.Contracts\ProjectFlow.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
