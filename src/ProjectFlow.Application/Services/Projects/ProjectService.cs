@@ -1,16 +1,22 @@
-﻿using ProjectFlow.Application.Domain.Projects;
+﻿using ProjectFlow.Application.Domain.ProjectMembers;
+using ProjectFlow.Application.Domain.Projects;
 using ProjectFlow.Application.Mapping;
 using ProjectFlow.Application.Services.Projects.Interfaces;
+using ProjectFlow.Contracts.ProjectMembers;
 using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
 internal sealed class ProjectService : IProjectsReader, IProjectCreator
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectMemberRepository _projectMemberRepository;
 
-    public ProjectService(IProjectRepository projectRepository)
+    public ProjectService(
+        IProjectRepository projectRepository,
+        IProjectMemberRepository projectMemberRepository)
     {
         _projectRepository = projectRepository;
+        _projectMemberRepository = projectMemberRepository;
     }
 
     public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
@@ -28,6 +34,15 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator
 
         return projects
             .Select(p => p.MapToResponse())
+            .ToList();
+    }
+
+    public async Task<IReadOnlyList<ProjectMemberResponse>> GetMembers(Guid projectId)
+    {
+        var members = await _projectMemberRepository.GetAllAsync(projectId);
+
+        return members
+            .Select(m => m.MapToResponse())
             .ToList();
     }
 }
