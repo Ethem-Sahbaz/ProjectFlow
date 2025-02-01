@@ -1,8 +1,10 @@
 ﻿using ProjectFlow.Application.Domain.Projects;
+using ProjectFlow.Application.Mapping;
 using ProjectFlow.Application.Services.Projects.Interfaces;
+using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
-internal sealed class ProjectService : IProjectsReader
+internal sealed class ProjectService : IProjectsReader, IProjectCreator
 {
     private readonly IProjectRepository _projectRepository;
 
@@ -11,8 +13,21 @@ internal sealed class ProjectService : IProjectsReader
         _projectRepository = projectRepository;
     }
 
-    public async Task<IReadOnlyList<Project>> GetAllProjectsAsync()
+    public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
     {
-        return await _projectRepository.GetAll();
+        Project project = new(Guid.NewGuid(), request.Name, request.Description, request.isPublic);
+
+        await _projectRepository.AddAsync(project);
+
+        return project.MapToResponse();
+    }
+
+    public async Task<IReadOnlyList<ProjectResponse>> GetAllProjectsAsync()
+    {
+        var projects = await _projectRepository.GetAllAsync();
+
+        return projects
+            .Select(p => p.MapToResponse())
+            .ToList();
     }
 }

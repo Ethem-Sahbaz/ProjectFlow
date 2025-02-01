@@ -4,7 +4,7 @@ public sealed class Project
     public Project(
         Guid id,
         string name,
-        string description,
+        string? description,
         bool isPublic)
     {
         Id = id;

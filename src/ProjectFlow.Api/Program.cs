@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using ProjectFlow.Application;
 using ProjectFlow.Application.Services.Projects.Interfaces;
+using ProjectFlow.Contracts.Projects;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,14 @@ app.MapGet("/projects", async (IProjectsReader reader) =>
 })
 .WithName("GetAllProjects")
 .WithOpenApi();
+
+app.MapPost("/projects", async (IProjectCreator creator ,CreateProjectRequest request) =>
+{
+    var response = await creator.CreateAsync(request);
+
+    return Results.Created($"/{response.Id}",response);
+});
+
 
 app.Run();
 

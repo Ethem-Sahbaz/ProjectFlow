@@ -11,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
         services.AddSingleton<IProjectsReader, ProjectService>();
+        services.AddSingleton<IProjectCreator, ProjectService>();
 
         return services;
     }

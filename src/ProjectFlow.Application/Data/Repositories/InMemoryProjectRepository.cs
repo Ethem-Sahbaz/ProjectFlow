@@ -8,9 +8,26 @@ internal sealed class InMemoryProjectRepository : IProjectRepository
     {
         SeedData();
     }
-    public Task<IReadOnlyList<Project>> GetAll()
+
+    public Task<Project> AddAsync(Project project)
+    {
+        _projects.Add(project);
+
+        return Task.FromResult(project);
+    }
+
+    public Task<IReadOnlyList<Project>> GetAllAsync()
     {
         return Task.FromResult<IReadOnlyList<Project>>(_projects);
+    }
+
+    public Task<IReadOnlyList<Project>> GetPublicProjectsAsync()
+    {
+        var publicProjects = _projects
+            .Where(p => p.IsPublic)
+            .ToList();
+
+        return Task.FromResult<IReadOnlyList<Project>>(publicProjects);
     }
 
     private void SeedData()

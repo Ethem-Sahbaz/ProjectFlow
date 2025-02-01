@@ -1,7 +1,7 @@
 ﻿using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects.Interfaces;
-public interface IProjectsReader
+public interface IProjectCreator
 {
-    Task<IReadOnlyList<ProjectResponse>> GetAllProjectsAsync();
+    Task<ProjectResponse> CreateAsync(CreateProjectRequest request);
 }

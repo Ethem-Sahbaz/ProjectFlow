@@ -4,3 +4,11 @@ GET {{ProjectFlow.Api_HostAddress}}/projects
 Accept: application/json
 
 ###
+
+POST {{ProjectFlow.Api_HostAddress}}/projects
+Content-Type: application/json
+{
+  "Name" : "ProjectFlow",
+  "Description" : "Project for building an application ",
+  "IsPublic" : true
+}
