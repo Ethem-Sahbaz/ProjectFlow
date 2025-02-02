@@ -25,6 +25,15 @@ internal static class ProjectEndpoints
         .WithName("CreateProject")
         .WithOpenApi();
 
+        app.MapGet(ApiEndpoints.Projects.GetProjectMembers, async (IProjectMemberReader reader, Guid id) =>
+        {
+            var members = await reader.GetMembers(id);
+
+            return Results.Ok(members);
+        })
+        .WithName("GetProjectMembers")
+        .WithOpenApi();
+
         return app;
     }
 }

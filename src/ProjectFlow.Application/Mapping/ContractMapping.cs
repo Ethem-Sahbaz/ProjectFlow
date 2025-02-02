@@ -17,8 +17,8 @@ internal static class ContractMapping
     public static ProjectMemberResponse MapToResponse(this ProjectMember member)
     {
         return new ProjectMemberResponse(
-            member.UserId,
             member.ProjectId,
+            member.UserId,
             member.IsOwner,
             member.Role);
     }

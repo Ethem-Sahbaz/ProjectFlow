@@ -1,7 +1,8 @@
-@ProjectFlow.Api_HostAddress = http://localhost:5084/api
+@ProjectFlow.Api_HostAddress = https://localhost:7183/api
 
 @ProjectsEndpoint = {{ProjectFlow.Api_HostAddress}}/projects
 
+@ProjectMembersEndpoint = {{ProjectsEndpoint}}
 GET {{ProjectsEndpoint}}
 Accept: application/json
 
@@ -14,3 +15,7 @@ Content-Type: application/json
   "Description" : "Project for building an application ",
   "IsPublic" : true
 }
+
+###
+GET {{ProjectsEndpoint}}//projectmembers
+Accept: application/json

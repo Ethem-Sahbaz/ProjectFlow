@@ -12,5 +12,8 @@ public static class ApiEndpoints
 
         public const string Post = Base;
 
+        public const string GetById = $"{Base}/{{id:guid}}";
+
+        public const string GetProjectMembers = $"{Base}/{{id:guid}}/projectmembers";
     }
 }

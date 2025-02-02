@@ -1,2 +1,2 @@
 ﻿namespace ProjectFlow.Contracts.ProjectMembers;
-public sealed record ProjectMemberResponse(Guid UserId, Guid ProjectId, bool IsOwner, string Role);
+public sealed record ProjectMemberResponse(Guid ProjectId, Guid UserId, bool IsOwner, string Role);

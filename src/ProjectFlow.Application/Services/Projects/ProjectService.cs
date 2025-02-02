@@ -6,7 +6,7 @@ using ProjectFlow.Contracts.ProjectMembers;
 using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
-internal sealed class ProjectService : IProjectsReader, IProjectCreator
+internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjectMemberReader
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;

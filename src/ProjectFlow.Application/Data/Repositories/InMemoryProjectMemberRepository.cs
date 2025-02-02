@@ -12,16 +12,20 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
 
     public Task<IReadOnlyList<ProjectMember>> GetAllAsync(Guid projectId)
     {
-        return Task.FromResult<IReadOnlyList<ProjectMember>>(_projectMembers);
+        var members = _projectMembers
+            .Where(x => x.ProjectId == projectId)
+            .ToList();
+
+        return Task.FromResult<IReadOnlyList<ProjectMember>>(members);
     }
 
     private List<ProjectMember> SeedData()
     {
         return new List<ProjectMember>() 
         {
-            new(Guid.NewGuid(), Guid.NewGuid(), true,"Developer"),
-            new(Guid.NewGuid(), Guid.NewGuid(), false, "HR"),
-            new(Guid.NewGuid(), Guid.NewGuid(), false, "Student")
+            new(Guid.Parse("0b0d9dab-cc1d-4ae9-a3f8-bacbeaa56280"), Guid.NewGuid(), true,"Developer"),
+            new(Guid.Parse("0b0d9dab-cc1d-4ae9-a3f8-bacbeaa56280"), Guid.NewGuid(), false, "HR"),
+            new(Guid.Parse("0b0d9dab-cc1d-4ae9-a3f8-bacbeaa56280"), Guid.NewGuid(), false, "Student")
         };
     }
 }

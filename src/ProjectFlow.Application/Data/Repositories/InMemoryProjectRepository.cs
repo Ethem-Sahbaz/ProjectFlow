@@ -34,7 +34,7 @@ internal sealed class InMemoryProjectRepository : IProjectRepository
     {
         _projects.AddRange(new List<Project>
         {
-            new Project(Guid.NewGuid(), "Project Alpha", "Description for Project Alpha", true),
+            new Project(Guid.Parse("0b0d9dab-cc1d-4ae9-a3f8-bacbeaa56280"), "Project Alpha", "Description for Project Alpha", true),
             new Project(Guid.NewGuid(), "Project Beta", "Description for Project Beta", false),
             new Project(Guid.NewGuid(), "Project Gamma", "Description for Project Gamma", true)
         });

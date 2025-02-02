@@ -2,13 +2,13 @@
 internal sealed class ProjectMember
 {
     public ProjectMember(
-        Guid userId,
         Guid projectId,
+        Guid userId,
         bool isOwner,
         string role)
     {
-        UserId = userId;
         ProjectId = projectId;
+        UserId = userId;
         IsOwner = isOwner;
         Role = role;
     }
