@@ -14,12 +14,4 @@ internal static class ContractMapping
             project.Description,
             project.IsPublic);
     }
-    public static ProjectMemberResponse MapToResponse(this ProjectMember member)
-    {
-        return new ProjectMemberResponse(
-            member.ProjectId,
-            member.UserId,
-            member.IsOwner,
-            member.Role);
-    }
 }

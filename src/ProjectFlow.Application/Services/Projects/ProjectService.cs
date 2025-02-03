@@ -1,5 +1,6 @@
 ﻿using ProjectFlow.Application.Domain.ProjectMembers;
 using ProjectFlow.Application.Domain.Projects;
+using ProjectFlow.Application.Domain.Users;
 using ProjectFlow.Application.Mapping;
 using ProjectFlow.Application.Services.Projects.Interfaces;
 using ProjectFlow.Contracts.ProjectMembers;
@@ -10,13 +11,16 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
+    private readonly IUserRepository _userRepository;
 
     public ProjectService(
         IProjectRepository projectRepository,
-        IProjectMemberRepository projectMemberRepository)
+        IProjectMemberRepository projectMemberRepository,
+        IUserRepository userRepository)
     {
         _projectRepository = projectRepository;
         _projectMemberRepository = projectMemberRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
@@ -41,8 +45,21 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
     {
         var members = await _projectMemberRepository.GetAllAsync(projectId);
 
-        return members
-            .Select(m => m.MapToResponse())
-            .ToList();
+        var projectMemberResponses = new List<ProjectMemberResponse>();
+
+        // TODO: Find better solution => NavigationProperty to projectmember domain model.
+        foreach (var member in members)
+        {
+            var user = await _userRepository.GetByIdAsync(member.UserId);
+
+            if (user is null)
+                continue;
+
+            ProjectMemberResponse projectMemberResponse = new(member.ProjectId, user.Id, user.Name, member.IsOwner, member.Role);
+
+            projectMemberResponses.Add(projectMemberResponse);
+        }
+
+        return projectMemberResponses;
     }
 }

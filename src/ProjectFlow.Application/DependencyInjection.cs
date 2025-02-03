@@ -2,6 +2,7 @@
 using ProjectFlow.Application.Data.Repositories;
 using ProjectFlow.Application.Domain.ProjectMembers;
 using ProjectFlow.Application.Domain.Projects;
+using ProjectFlow.Application.Domain.Users;
 using ProjectFlow.Application.Services.Projects;
 using ProjectFlow.Application.Services.Projects.Interfaces;
 
@@ -12,6 +13,7 @@ public static class DependencyInjection
     {
         services.AddSingleton<IProjectRepository, InMemoryProjectRepository>();
         services.AddSingleton<IProjectMemberRepository, InMemoryProjectMemberRepository>();
+        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
 
         services.AddSingleton<IProjectsReader, ProjectService>();
         services.AddSingleton<IProjectCreator, ProjectService>();
