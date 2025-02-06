@@ -47,7 +47,8 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
 
         var projectMemberResponses = new List<ProjectMemberResponse>();
 
-        // TODO: Find better solution => NavigationProperty to projectmember domain model.
+        // For Queries there is no need to map domain model. Return client needed data.
+        // In case of use of a db.
         foreach (var member in members)
         {
             var user = await _userRepository.GetByIdAsync(member.UserId);
