@@ -32,6 +32,7 @@ internal static class ProjectEndpoints
             return Results.Ok(members);
         })
         .WithName("GetProjectMembers")
+        .RequireAuthorization()
         .WithOpenApi();
 
         return app;

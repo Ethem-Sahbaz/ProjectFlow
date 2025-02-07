@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+
 namespace ProjectFlow.Api.Endpoints;
 
 public static class IdentityEndpoint
@@ -13,7 +14,6 @@ public static class IdentityEndpoint
 
     public static WebApplication UseIdentityEndpoint(this WebApplication app)
     {
-
         app.MapPost(ApiEndpoints.Identity.Token, (TokenGenerationRequest request) =>
         {
             var tokenHandler = new JwtSecurityTokenHandler();
