@@ -16,4 +16,11 @@ public static class ApiEndpoints
 
         public const string GetProjectMembers = $"{Base}/{{id:guid}}/projectmembers";
     }
+
+    public static class Identity
+    {
+        private const string Base =$"{ApiBase}/identity";
+
+        public const string Token = $"{Base}/token";
+    }
 }

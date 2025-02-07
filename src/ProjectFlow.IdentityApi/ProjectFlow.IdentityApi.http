@@ -1,0 +1,6 @@
+@ProjectFlow.IdentityApi_HostAddress = http://localhost:5034
+
+GET {{ProjectFlow.IdentityApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
