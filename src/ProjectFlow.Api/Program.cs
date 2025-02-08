@@ -6,6 +6,7 @@ using ProjectFlow.Application;
 using System.Text;
 using ProjectFlow.Api.Endpoints.Projects.Validators;
 using FluentValidation;
+using ProjectFlow.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
