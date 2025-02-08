@@ -23,11 +23,15 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
         _userRepository = userRepository;
     }
 
-    public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
+    public async Task<ProjectResponse> CreateAsync(Guid userId, CreateProjectRequest request)
     {
-        Project project = new(Guid.NewGuid(), request.Name, request.Description, request.isPublic);
+        Project project = new(Guid.NewGuid(), userId, request.Name, request.Description, request.isPublic);
 
         await _projectRepository.AddAsync(project);
+
+        var projectMember = new ProjectMember(project.Id, userId, "Owner");
+
+        await _projectMemberRepository.AddAsync(projectMember);
 
         return project.MapToResponse();
     }
@@ -47,7 +51,7 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
 
         var projectMemberResponses = new List<ProjectMemberResponse>();
 
-        // For Queries there is no need to map domain model. Return client needed data.
+        // For Queries there is no need to map domain model. Return clients needed data.
         // In case of use of a db.
         foreach (var member in members)
         {
@@ -56,7 +60,7 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
             if (user is null)
                 continue;
 
-            ProjectMemberResponse projectMemberResponse = new(member.ProjectId, user.Id, user.Name, member.IsOwner, member.Role);
+            ProjectMemberResponse projectMemberResponse = new(member.ProjectId, user.Id, user.Name, member.Role);
 
             projectMemberResponses.Add(projectMemberResponse);
         }
