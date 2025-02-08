@@ -46,6 +46,32 @@ internal static class ProjectEndpoints
         .RequireAuthorization()
         .WithOpenApi();
 
+        app.MapGet(ApiEndpoints.Projects.JoinRequest, async (IProjectJoinRequestReader requestReader, Guid id) =>
+        {
+            var joinRequests = await requestReader.GetProjectJoinRequestsAsync(id);
+
+            return Results.Ok(joinRequests);
+        })
+        .RequireAuthorization()
+        .WithOpenApi();
+
+        app.MapPost(ApiEndpoints.Projects.JoinRequest, async (IProjectJoinRequestCreator creator, CreateProjectJoinRequest request, HttpContext context, Guid id) =>
+        {
+            var userId = context.GetUserId();
+
+            var created = await creator.CreateJoinRequestAsync(userId, id, request);
+
+            if (!created)
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Created();
+
+        })
+        .RequireAuthorization()
+        .WithOpenApi();
+
         return app;
     }
 }

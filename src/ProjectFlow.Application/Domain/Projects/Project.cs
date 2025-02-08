@@ -20,4 +20,5 @@ public sealed class Project
     public string Name { get; init; }
     public string? Description { get; init; }
     public bool IsPublic { get; init; }
+    public List<JoinRequest> JoinRequests { get; init; } = new();
 }
