@@ -1,8 +1,9 @@
 ﻿using ProjectFlow.Api.Authentication;
+using ProjectFlow.Api.Filters;
 using ProjectFlow.Application.Services.Projects.Interfaces;
 using ProjectFlow.Contracts.Projects;
 
-namespace ProjectFlow.Api.Endpoints;
+namespace ProjectFlow.Api.Endpoints.Projects;
 
 internal static class ProjectEndpoints
 {
@@ -17,15 +18,16 @@ internal static class ProjectEndpoints
         .WithName("GetAllProjects")
         .WithOpenApi();
 
-        app.MapPost(ApiEndpoints.Projects.Post, async (IProjectCreator creator,HttpContext context ,CreateProjectRequest request) =>
+        app.MapPost(ApiEndpoints.Projects.Post, async (IProjectCreator creator, HttpContext context, CreateProjectRequest request) =>
         {
             var userId = context.GetUserId();
 
             var response = await creator.CreateAsync(userId, request);
-            
+
             return Results.Created($"{ApiEndpoints.Projects.Post}/{response.Id}", response);
         })
         .WithName("CreateProject")
+        .AddEndpointFilter<ValidationFilter<CreateProjectRequest>>()
         .RequireAuthorization()
         .WithOpenApi();
 
