@@ -16,6 +16,13 @@ internal sealed class InMemoryProjectRepository : IProjectRepository
         return Task.FromResult<IReadOnlyList<Project>>(_projects);
     }
 
+    public Task<Project?> GetByIdAsync(Guid id)
+    {
+        var project = _projects.FirstOrDefault(p => p.Id == id);
+
+        return Task.FromResult(project);
+    }
+
     public Task<IReadOnlyList<Project>> GetPublicProjectsAsync()
     {
         var publicProjects = _projects

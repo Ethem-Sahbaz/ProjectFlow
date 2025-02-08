@@ -35,6 +35,11 @@ internal static class ProjectEndpoints
         {
             var members = await reader.GetMembers(id);
 
+            if (members is null)
+            {
+                return Results.NotFound("Project not found.");
+            }
+
             return Results.Ok(members);
         })
         .WithName("GetProjectMembers")

@@ -45,8 +45,15 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
             .ToList();
     }
 
-    public async Task<IReadOnlyList<ProjectMemberResponse>> GetMembers(Guid projectId)
+    public async Task<IReadOnlyList<ProjectMemberResponse>?> GetMembers(Guid projectId)
     {
+        var project = await _projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+        {
+            return null;
+        }
+
         var members = await _projectMemberRepository.GetAllAsync(projectId);
 
         var projectMemberResponses = new List<ProjectMemberResponse>();

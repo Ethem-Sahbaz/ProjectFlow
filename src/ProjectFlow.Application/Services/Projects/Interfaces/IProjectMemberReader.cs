@@ -3,5 +3,5 @@
 namespace ProjectFlow.Application.Services.Projects.Interfaces;
 public interface IProjectMemberReader
 {
-    Task<IReadOnlyList<ProjectMemberResponse>> GetMembers(Guid projectId);
+    Task<IReadOnlyList<ProjectMemberResponse>?> GetMembers(Guid projectId);
 }
