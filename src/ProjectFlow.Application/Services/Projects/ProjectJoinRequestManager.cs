@@ -1,7 +1,11 @@
 ﻿using ProjectFlow.Application.Domain.ProjectMembers;
+using ProjectFlow.Application.Domain.ProjectMembers.Errors;
 using ProjectFlow.Application.Domain.Projects;
+using ProjectFlow.Application.Domain.Projects.Errors;
 using ProjectFlow.Application.Domain.Users;
+using ProjectFlow.Application.Domain.Users.Errors;
 using ProjectFlow.Application.Services.Projects.Interfaces;
+using ProjectFlow.Application.Shared;
 using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
@@ -21,38 +25,41 @@ internal sealed class ProjectJoinRequestManager : IProjectJoinRequestCreator, IP
         _projectMemberRepository = projectMemberRepository;
     }
 
-    public async Task<bool> CreateJoinRequestAsync(Guid userId, Guid projectId, CreateProjectJoinRequest request)
+    public async Task<Result> CreateJoinRequestAsync(Guid userId, Guid projectId, CreateProjectJoinRequest request)
     {
         var user = await _userRepository.GetByIdAsync(userId);
 
-        // TODO: Replace with Result Pattern.
         if (user is null)
-            return false;
+            return Result.Failure(UserErrors.NotFound);
 
         var project = await _projectRepository.GetByIdAsync(projectId);
 
         if (project is null)
-            return false;
+            return Result.Failure(ProjectErrors.NotFound);
 
         var joinRequest = new JoinRequest(Guid.NewGuid(), userId, projectId, request.Motivation);
 
         project.JoinRequests.Add(joinRequest);
 
-        return true;
+        return Result.Success();
     }
 
-    public async Task<IReadOnlyList<ProjectJoinRequestResponse>?> GetProjectJoinRequestsAsync(Guid projectId, Guid userId)
+    public async Task<Result<IReadOnlyList<ProjectJoinRequestResponse>>> GetProjectJoinRequestsAsync(Guid projectId, Guid userId)
     {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+            return Result.Failure<IReadOnlyList<ProjectJoinRequestResponse>>(UserErrors.NotFound);
+
         var project = await _projectRepository.GetByIdAsync(projectId);
 
         if (project is null)
-            return new List<ProjectJoinRequestResponse>();
+            return Result.Failure<IReadOnlyList<ProjectJoinRequestResponse>>(ProjectErrors.NotFound);
 
-        // IsOwner business logic can maybe be extracted
         var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
 
         if (!isOwner)
-            return null;
+            return Result.Failure<IReadOnlyList<ProjectJoinRequestResponse>>(ProjectMemberErrors.NotOwner);
 
         var joinRequestResponses = project.JoinRequests
             .Select(r => new ProjectJoinRequestResponse(r.Id, r.ProjectId, r.Motivation))

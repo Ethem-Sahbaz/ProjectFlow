@@ -1,7 +1,8 @@
-﻿using ProjectFlow.Contracts.Projects;
+﻿using ProjectFlow.Application.Shared;
+using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects.Interfaces;
 public interface IProjectJoinRequestReader
 {
-    Task<IReadOnlyList<ProjectJoinRequestResponse>?> GetProjectJoinRequestsAsync(Guid projectId, Guid userId);
+    Task<Result<IReadOnlyList<ProjectJoinRequestResponse>>> GetProjectJoinRequestsAsync(Guid projectId, Guid userId);
 }

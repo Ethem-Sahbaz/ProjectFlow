@@ -1,8 +1,11 @@
 ﻿using ProjectFlow.Application.Domain.ProjectMembers;
 using ProjectFlow.Application.Domain.Projects;
+using ProjectFlow.Application.Domain.Projects.Errors;
 using ProjectFlow.Application.Domain.Users;
+using ProjectFlow.Application.Domain.Users.Errors;
 using ProjectFlow.Application.Mapping;
 using ProjectFlow.Application.Services.Projects.Interfaces;
+using ProjectFlow.Application.Shared;
 using ProjectFlow.Contracts.ProjectMembers;
 using ProjectFlow.Contracts.Projects;
 
@@ -23,8 +26,15 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
         _userRepository = userRepository;
     }
 
-    public async Task<ProjectResponse> CreateAsync(Guid userId, CreateProjectRequest request)
+    public async Task<Result<ProjectResponse>> CreateAsync(Guid userId, CreateProjectRequest request)
     {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+        {
+            return Result.Failure<ProjectResponse>(UserErrors.NotFound);
+        }
+
         Project project = new(Guid.NewGuid(), userId, request.Name, request.Description, request.isPublic);
 
         await _projectRepository.AddAsync(project);
@@ -45,13 +55,13 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
             .ToList();
     }
 
-    public async Task<IReadOnlyList<ProjectMemberResponse>?> GetMembers(Guid projectId)
+    public async Task<Result<IReadOnlyList<ProjectMemberResponse>>> GetMembers(Guid projectId)
     {
         var project = await _projectRepository.GetByIdAsync(projectId);
 
         if (project is null)
         {
-            return null;
+            return Result.Failure<IReadOnlyList<ProjectMemberResponse>>(ProjectErrors.NotFound);
         }
 
         var members = await _projectMemberRepository.GetAllAsync(projectId);

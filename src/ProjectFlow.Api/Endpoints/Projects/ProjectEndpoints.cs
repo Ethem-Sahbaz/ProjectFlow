@@ -1,5 +1,6 @@
 ﻿using ProjectFlow.Api.Authentication;
 using ProjectFlow.Api.Filters;
+using ProjectFlow.Application.Domain.ProjectMembers.Errors;
 using ProjectFlow.Application.Services.Projects.Interfaces;
 using ProjectFlow.Contracts.Projects;
 
@@ -22,9 +23,16 @@ internal static class ProjectEndpoints
         {
             var userId = context.GetUserId();
 
-            var response = await creator.CreateAsync(userId, request);
+            var createResult = await creator.CreateAsync(userId, request);
 
-            return Results.Created($"{ApiEndpoints.Projects.Post}/{response.Id}", response);
+            if (createResult.IsFailure)
+            {
+                return Results.BadRequest(createResult.Error);
+            }
+
+            var projectResponse = createResult.Value;
+
+            return Results.Created($"{ApiEndpoints.Projects.Post}/{projectResponse.Id}", projectResponse);
         })
         .WithName("CreateProject")
         .AddEndpointFilter<ValidationFilter<CreateProjectRequest>>()
@@ -33,14 +41,14 @@ internal static class ProjectEndpoints
 
         app.MapGet(ApiEndpoints.Projects.GetProjectMembers, async (IProjectMemberReader reader, Guid id) =>
         {
-            var members = await reader.GetMembers(id);
+            var membersResult = await reader.GetMembers(id);
 
-            if (members is null)
+            if (membersResult.IsFailure)
             {
-                return Results.NotFound("Project not found.");
+                return Results.BadRequest(membersResult.Error);
             }
 
-            return Results.Ok(members);
+            return Results.Ok(membersResult.Value);
         })
         .WithName("GetProjectMembers")
         .RequireAuthorization()
@@ -50,14 +58,19 @@ internal static class ProjectEndpoints
         {
             var userId = context.GetUserId();
 
-            var joinRequests = await requestReader.GetProjectJoinRequestsAsync(id, userId);
+            var joinRequestsResult = await requestReader.GetProjectJoinRequestsAsync(id, userId);
 
-            if (joinRequests is null)
+            if (joinRequestsResult.IsFailure)
             {
-                return Results.Unauthorized();
+                if (joinRequestsResult.Error == ProjectMemberErrors.NotOwner)
+                {
+                    return Results.Unauthorized();
+                }
+
+                return Results.NotFound(joinRequestsResult.Error);
             }
 
-            return Results.Ok(joinRequests);
+            return Results.Ok(joinRequestsResult.Value);
         })
         .RequireAuthorization()
         .WithOpenApi();
@@ -66,15 +79,14 @@ internal static class ProjectEndpoints
         {
             var userId = context.GetUserId();
 
-            var created = await creator.CreateJoinRequestAsync(userId, id, request);
+            var createResult = await creator.CreateJoinRequestAsync(userId, id, request);
 
-            if (!created)
+            if (createResult.IsFailure)
             {
-                return Results.NotFound();
+                return Results.NotFound(createResult.Error);
             }
 
             return Results.Created();
-
         })
         .RequireAuthorization()
         .WithOpenApi();
