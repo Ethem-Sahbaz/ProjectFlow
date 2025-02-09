@@ -26,6 +26,20 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
         return Task.FromResult<IReadOnlyList<ProjectMember>>(members);
     }
 
+    public Task<bool> IsProjectOwner(Guid projectId, Guid userId)
+    {
+        var member = _projectMembers.FirstOrDefault(m => m.UserId == userId &&  m.ProjectId == projectId);
+
+        if (member is null)
+            return Task.FromResult(false);
+
+        if(member.Role != "Owner")
+            return Task.FromResult(false);
+
+
+        return Task.FromResult(true);
+    }
+
     private bool IsAlreadyMember(ProjectMember projectMember)
     {
         return _projectMembers.Exists(p => p.UserId == projectMember.UserId && p.ProjectId == projectMember.ProjectId);

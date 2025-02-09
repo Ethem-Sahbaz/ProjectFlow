@@ -46,9 +46,16 @@ internal static class ProjectEndpoints
         .RequireAuthorization()
         .WithOpenApi();
 
-        app.MapGet(ApiEndpoints.Projects.JoinRequest, async (IProjectJoinRequestReader requestReader, Guid id) =>
+        app.MapGet(ApiEndpoints.Projects.JoinRequest, async (IProjectJoinRequestReader requestReader, HttpContext context, Guid id) =>
         {
-            var joinRequests = await requestReader.GetProjectJoinRequestsAsync(id);
+            var userId = context.GetUserId();
+
+            var joinRequests = await requestReader.GetProjectJoinRequestsAsync(id, userId);
+
+            if (joinRequests is null)
+            {
+                return Results.Unauthorized();
+            }
 
             return Results.Ok(joinRequests);
         })

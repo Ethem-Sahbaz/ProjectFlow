@@ -3,6 +3,5 @@
 namespace ProjectFlow.Application.Services.Projects.Interfaces;
 public interface IProjectJoinRequestReader
 {
-
-    Task<IReadOnlyList<ProjectJoinRequestResponse>> GetProjectJoinRequestsAsync(Guid projectId);
+    Task<IReadOnlyList<ProjectJoinRequestResponse>?> GetProjectJoinRequestsAsync(Guid projectId, Guid userId);
 }
