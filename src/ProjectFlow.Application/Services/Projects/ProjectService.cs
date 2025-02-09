@@ -1,4 +1,5 @@
 ﻿using ProjectFlow.Application.Domain.ProjectMembers;
+using ProjectFlow.Application.Domain.ProjectMembers.Errors;
 using ProjectFlow.Application.Domain.Projects;
 using ProjectFlow.Application.Domain.Projects.Errors;
 using ProjectFlow.Application.Domain.Users;
@@ -10,7 +11,8 @@ using ProjectFlow.Contracts.ProjectMembers;
 using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
-internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjectMemberReader
+internal sealed class ProjectService 
+    : IProjectsReader, IProjectCreator, IProjectMemberReader, IProjectDeletor
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
@@ -44,6 +46,28 @@ internal sealed class ProjectService : IProjectsReader, IProjectCreator, IProjec
         await _projectMemberRepository.AddAsync(projectMember);
 
         return project.MapToResponse();
+    }
+
+    public async Task<Result> DeleteByIdAsync(Guid id, Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+            return Result.Failure(UserErrors.NotFound);
+
+        var project = await _projectRepository.GetByIdAsync(id);
+
+        if (project is null)
+            return Result.Failure(ProjectErrors.NotFound);
+
+        var isOwner = await _projectMemberRepository.IsProjectOwner(id, userId);
+
+        if (!isOwner)
+            return Result.Failure(ProjectMemberErrors.NotOwner);
+
+        await _projectRepository.DeleteByIdAsync(id);
+
+        return Result.Success();
     }
 
     public async Task<IReadOnlyList<ProjectResponse>> GetAllProjectsAsync()

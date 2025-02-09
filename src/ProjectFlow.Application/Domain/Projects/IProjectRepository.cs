@@ -5,4 +5,5 @@ public interface IProjectRepository
     Task<Project?> GetByIdAsync(Guid id);
     Task<IReadOnlyList<Project>> GetPublicProjectsAsync();
     Task<Project> AddAsync(Project project);
+    Task DeleteByIdAsync(Guid id);
 }

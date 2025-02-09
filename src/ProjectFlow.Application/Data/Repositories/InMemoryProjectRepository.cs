@@ -31,4 +31,10 @@ internal sealed class InMemoryProjectRepository : IProjectRepository
 
         return Task.FromResult<IReadOnlyList<Project>>(publicProjects);
     }
+    public Task DeleteByIdAsync(Guid id)
+    {
+        _projects.RemoveAll(p => p.Id == id);
+
+        return Task.CompletedTask;
+    }
 }

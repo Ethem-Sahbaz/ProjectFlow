@@ -39,6 +39,28 @@ internal static class ProjectEndpoints
         .RequireAuthorization()
         .WithOpenApi();
 
+        app.MapDelete(ApiEndpoints.Projects.Delete, async (IProjectDeletor deletor, HttpContext context, Guid id) =>
+        {
+            var userId = context.GetUserId();
+
+            var deleteResult = await deletor.DeleteByIdAsync(id, userId);
+
+            if (deleteResult.IsFailure)
+            {
+                if (deleteResult.Error == ProjectMemberErrors.NotOwner)
+                {
+                    return Results.Unauthorized();
+                }
+
+                return Results.NotFound(deleteResult.Error);
+            }
+
+            return Results.NoContent();
+        })
+        .RequireAuthorization()
+        .WithName("DeleteProject")
+        .WithOpenApi();
+
         app.MapGet(ApiEndpoints.Projects.GetProjectMembers, async (IProjectMemberReader reader, Guid id) =>
         {
             var membersResult = await reader.GetMembers(id);

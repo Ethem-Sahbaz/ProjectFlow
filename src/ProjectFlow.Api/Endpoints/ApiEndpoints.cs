@@ -14,6 +14,8 @@ public static class ApiEndpoints
 
         public const string GetById = $"{Base}/{{id:guid}}";
 
+        public const string Delete = $"{Base}/{{id:guid}}";
+
         public const string GetProjectMembers = $"{Base}/{{id:guid}}/projectmembers";
 
         public const string GetJoinRequests = $"{Base}/{{id:guid}}/join-requests";
