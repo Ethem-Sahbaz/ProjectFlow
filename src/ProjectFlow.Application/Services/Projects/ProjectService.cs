@@ -12,7 +12,7 @@ using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
 internal sealed class ProjectService 
-    : IProjectsReader, IProjectCreator, IProjectMemberReader, IProjectDeletor
+    : IProjectsReader, IProjectCreator, IProjectMemberReader, IProjectDeleter, IProjectUpdater
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
@@ -108,4 +108,46 @@ internal sealed class ProjectService
 
         return projectMemberResponses;
     }
+
+    public async Task<Result<ProjectResponse>> UpdateAsync(UpdateProjectRequest request, Guid projectId, Guid userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+            return Result.Failure<ProjectResponse>(UserErrors.NotFound);
+
+        var project = await _projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+            return Result.Failure<ProjectResponse>(ProjectErrors.NotFound);
+
+        var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
+
+        if (!isOwner)
+            return Result.Failure<ProjectResponse>(ProjectMemberErrors.NotOwner);
+
+        var updatedProject = new Project(
+            project.Id,
+            project.CreatedByUserId,
+            request.Name,
+            request.Description,
+            request.isPublic);
+
+        updatedProject.JoinRequests.AddRange(project.JoinRequests);
+
+        project.JoinRequests.Clear();
+
+        await _projectRepository.DeleteByIdAsync(projectId);
+
+        await _projectRepository.AddAsync(updatedProject);
+
+        var projectResponse = new ProjectResponse(
+            updatedProject.Id,
+            updatedProject.Name,
+            updatedProject.Description,
+            updatedProject.IsPublic);
+
+        return Result.Success(projectResponse);
+    }
+
 }

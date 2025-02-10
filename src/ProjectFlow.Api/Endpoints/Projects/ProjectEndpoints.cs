@@ -39,26 +39,42 @@ internal static class ProjectEndpoints
         .RequireAuthorization()
         .WithOpenApi();
 
-        app.MapDelete(ApiEndpoints.Projects.Delete, async (IProjectDeletor deletor, HttpContext context, Guid id) =>
+        app.MapDelete(ApiEndpoints.Projects.Delete, async (IProjectDeleter deletor, HttpContext context, Guid id) =>
         {
             var userId = context.GetUserId();
 
             var deleteResult = await deletor.DeleteByIdAsync(id, userId);
 
-            if (deleteResult.IsFailure)
+            if (deleteResult.IsSuccess)
             {
-                if (deleteResult.Error == ProjectMemberErrors.NotOwner)
-                {
-                    return Results.Unauthorized();
-                }
-
-                return Results.NotFound(deleteResult.Error);
+                return Results.NoContent();
             }
 
-            return Results.NoContent();
+            if (deleteResult.Error == ProjectMemberErrors.NotOwner)
+            {
+                return Results.Unauthorized();
+            }
+
+            return Results.NotFound(deleteResult.Error);
         })
         .RequireAuthorization()
         .WithName("DeleteProject")
+        .WithOpenApi();
+
+        app.MapPut(ApiEndpoints.Projects.Update, async (IProjectUpdater updater, UpdateProjectRequest request, HttpContext context, Guid id) =>
+        {
+            var userId = context.GetUserId();
+
+            var updateResult = await updater.UpdateAsync(request, id, userId);
+
+            if (updateResult.IsFailure)
+                return Results.NotFound(updateResult.Error);
+
+            return Results.Ok(updateResult.Value);
+
+        })
+        .WithName("UpdateProject")
+        .RequireAuthorization()
         .WithOpenApi();
 
         app.MapGet(ApiEndpoints.Projects.GetProjectMembers, async (IProjectMemberReader reader, Guid id) =>
@@ -82,17 +98,15 @@ internal static class ProjectEndpoints
 
             var joinRequestsResult = await requestReader.GetProjectJoinRequestsAsync(id, userId);
 
-            if (joinRequestsResult.IsFailure)
-            {
-                if (joinRequestsResult.Error == ProjectMemberErrors.NotOwner)
-                {
-                    return Results.Unauthorized();
-                }
+            if (joinRequestsResult.IsSuccess)
+                return Results.Ok(joinRequestsResult.Value);
 
-                return Results.NotFound(joinRequestsResult.Error);
-            }
+            if (joinRequestsResult.Error == ProjectMemberErrors.NotOwner)
+                return Results.Unauthorized();
 
-            return Results.Ok(joinRequestsResult.Value);
+            return Results.NotFound(joinRequestsResult.Error);
+
+
         })
         .RequireAuthorization()
         .WithOpenApi();
