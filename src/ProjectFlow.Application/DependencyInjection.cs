@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddSingleton<IProjectUpdater, ProjectService>();
         services.AddSingleton<IProjectJoinRequestCreator, ProjectJoinRequestManager>();
         services.AddSingleton<IProjectJoinRequestReader, ProjectJoinRequestManager>();
+        services.AddSingleton<IProjectJoinRequestHandler, ProjectJoinRequestManager>();
         return services;
     }
 }
