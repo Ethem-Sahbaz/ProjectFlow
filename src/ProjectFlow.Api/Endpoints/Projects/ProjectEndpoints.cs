@@ -108,6 +108,7 @@ internal static class ProjectEndpoints
 
 
         })
+        .WithName("GetJoinRequests")
         .RequireAuthorization()
         .WithOpenApi();
 
@@ -124,13 +125,27 @@ internal static class ProjectEndpoints
 
             return Results.Created();
         })
+        .WithName("CreateJoinRequest")
         .RequireAuthorization()
         .WithOpenApi();
 
-        app.MapPost(ApiEndpoints.Projects.PostJoinRequest, () =>
+        app.MapPost(
+            ApiEndpoints.Projects.PostJoinRequest,
+            async (IProjectJoinRequestHandler handler, HandleProjectJoinRequest handleRequest, HttpContext context, Guid projectId, Guid requestId) =>
         {
+            var userId = context.GetUserId();
+
+            var handleResult = await handler.HandleRequestAsync(handleRequest, projectId, userId, requestId);
+
+            if (handleResult.IsFailure)
+            {
+                return Results.BadRequest(handleResult.Error);
+            }
+
+            return Results.Ok();
 
         })
+        .WithName("ProcessJoinRequest")
         .RequireAuthorization()
         .WithOpenApi();
 

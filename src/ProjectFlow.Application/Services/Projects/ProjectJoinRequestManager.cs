@@ -9,7 +9,8 @@ using ProjectFlow.Application.Shared;
 using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
-internal sealed class ProjectJoinRequestManager : IProjectJoinRequestCreator, IProjectJoinRequestReader
+internal sealed class ProjectJoinRequestManager 
+    : IProjectJoinRequestCreator, IProjectJoinRequestReader, IProjectJoinRequestHandler
 {
     private readonly IUserRepository _userRepository;
     private readonly IProjectRepository _projectRepository;
@@ -66,5 +67,48 @@ internal sealed class ProjectJoinRequestManager : IProjectJoinRequestCreator, IP
             .ToList();
 
         return joinRequestResponses;
+    }
+
+    public async Task<Result> HandleRequestAsync(
+        HandleProjectJoinRequest handleRequest,
+        Guid projectId,
+        Guid userId,
+        Guid joinRequestId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+            return Result.Failure(UserErrors.NotFound);
+
+        var project = await _projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+            return Result.Failure(ProjectErrors.NotFound);
+
+        var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
+
+        if (!isOwner)
+            return Result.Failure(ProjectMemberErrors.NotOwner);
+
+        var joinRequest = project.JoinRequests.FirstOrDefault(x => x.Id == joinRequestId);
+
+        if (joinRequest is null)
+        {
+            return Result.Failure(JoinRequestErrors.NotFound);
+        }
+
+        if (!handleRequest.IsApproved)
+        {
+            project.JoinRequests.Remove(joinRequest);
+
+            return Result.Success();
+        }
+        var newProjectMember = new ProjectMember(projectId, joinRequest.UserId, "Member");
+
+        await _projectMemberRepository.AddAsync(newProjectMember);
+
+        project.JoinRequests.Remove(joinRequest);
+
+        return Result.Success();
     }
 }
