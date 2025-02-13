@@ -38,6 +38,11 @@ internal sealed class ProjectJoinRequestManager
         if (project is null)
             return Result.Failure(ProjectErrors.NotFound);
 
+        var isMember = await _projectMemberRepository.IsAlreadyMember(projectId, userId);
+
+        if (isMember)
+            return Result.Failure(ProjectMemberErrors.MemberExists);
+
         var joinRequest = new JoinRequest(Guid.NewGuid(), userId, projectId, request.Motivation);
 
         project.JoinRequests.Add(joinRequest);
@@ -57,13 +62,13 @@ internal sealed class ProjectJoinRequestManager
         if (project is null)
             return Result.Failure<IReadOnlyList<ProjectJoinRequestResponse>>(ProjectErrors.NotFound);
 
-        var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
+        var isOwner = await _projectMemberRepository.IsProjectOwnerAsync(projectId, userId);
 
         if (!isOwner)
             return Result.Failure<IReadOnlyList<ProjectJoinRequestResponse>>(ProjectMemberErrors.NotOwner);
 
         var joinRequestResponses = project.JoinRequests
-            .Select(r => new ProjectJoinRequestResponse(r.Id, r.ProjectId, r.Motivation))
+            .Select(r => new ProjectJoinRequestResponse(r.Id, r.UserId, r.ProjectId, r.Motivation))
             .ToList();
 
         return joinRequestResponses;
@@ -85,7 +90,7 @@ internal sealed class ProjectJoinRequestManager
         if (project is null)
             return Result.Failure(ProjectErrors.NotFound);
 
-        var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
+        var isOwner = await _projectMemberRepository.IsProjectOwnerAsync(projectId, userId);
 
         if (!isOwner)
             return Result.Failure(ProjectMemberErrors.NotOwner);
@@ -103,6 +108,7 @@ internal sealed class ProjectJoinRequestManager
 
             return Result.Success();
         }
+
         var newProjectMember = new ProjectMember(projectId, joinRequest.UserId, "Member");
 
         await _projectMemberRepository.AddAsync(newProjectMember);

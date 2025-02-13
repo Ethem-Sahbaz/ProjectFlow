@@ -2,6 +2,7 @@
 internal interface IProjectMemberRepository
 {
     Task<IReadOnlyList<ProjectMember>> GetAllAsync(Guid projectId);
-    Task<bool> AddAsync(ProjectMember projectMember);
-    Task<bool> IsProjectOwner(Guid projectId, Guid userId);
+    Task AddAsync(ProjectMember projectMember);
+    Task<bool> IsProjectOwnerAsync(Guid projectId, Guid userId);
+    Task<bool> IsAlreadyMember(Guid projectId, Guid userId);
 }

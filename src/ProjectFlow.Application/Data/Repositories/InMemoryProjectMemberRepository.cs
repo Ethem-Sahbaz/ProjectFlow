@@ -5,16 +5,11 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
 {
     private readonly List<ProjectMember> _projectMembers = new();
 
-    public Task<bool> AddAsync(ProjectMember projectMember)
+    public Task AddAsync(ProjectMember projectMember)
     {
-        if (IsAlreadyMember(projectMember))
-        {
-            return Task.FromResult(false);
-        }
-
         _projectMembers.Add(projectMember);
 
-        return Task.FromResult(true);
+        return Task.CompletedTask;
     }
 
     public Task<IReadOnlyList<ProjectMember>> GetAllAsync(Guid projectId)
@@ -26,7 +21,7 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
         return Task.FromResult<IReadOnlyList<ProjectMember>>(members);
     }
 
-    public Task<bool> IsProjectOwner(Guid projectId, Guid userId)
+    public Task<bool> IsProjectOwnerAsync(Guid projectId, Guid userId)
     {
         var member = _projectMembers.FirstOrDefault(m => m.UserId == userId &&  m.ProjectId == projectId);
 
@@ -40,8 +35,10 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
         return Task.FromResult(true);
     }
 
-    private bool IsAlreadyMember(ProjectMember projectMember)
+    public Task<bool> IsAlreadyMember(Guid projectId, Guid userId)
     {
-        return _projectMembers.Exists(p => p.UserId == projectMember.UserId && p.ProjectId == projectMember.ProjectId);
+        var isMember = _projectMembers.Exists(p => p.UserId == userId && p.ProjectId == projectId);
+
+        return Task.FromResult(isMember);
     }
 }

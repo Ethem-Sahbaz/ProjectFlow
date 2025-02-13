@@ -60,7 +60,7 @@ internal sealed class ProjectService
         if (project is null)
             return Result.Failure(ProjectErrors.NotFound);
 
-        var isOwner = await _projectMemberRepository.IsProjectOwner(id, userId);
+        var isOwner = await _projectMemberRepository.IsProjectOwnerAsync(id, userId);
 
         if (!isOwner)
             return Result.Failure(ProjectMemberErrors.NotOwner);
@@ -121,7 +121,7 @@ internal sealed class ProjectService
         if (project is null)
             return Result.Failure<ProjectResponse>(ProjectErrors.NotFound);
 
-        var isOwner = await _projectMemberRepository.IsProjectOwner(projectId, userId);
+        var isOwner = await _projectMemberRepository.IsProjectOwnerAsync(projectId, userId);
 
         if (!isOwner)
             return Result.Failure<ProjectResponse>(ProjectMemberErrors.NotOwner);
