@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlow.Application", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlow.Contracts", "src\ProjectFlow.Contracts\ProjectFlow.Contracts.csproj", "{15707D25-5F9E-4411-B705-3DC71B0F1A15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectFlow.IntegrationTests", "test\ProjectFlow.IntegrationTests\ProjectFlow.IntegrationTests.csproj", "{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{15707D25-5F9E-4411-B705-3DC71B0F1A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15707D25-5F9E-4411-B705-3DC71B0F1A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15707D25-5F9E-4411-B705-3DC71B0F1A15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,5 +45,6 @@ Global
 		{F83B061E-679C-405B-9119-B9F93EE53A6E} = {84040322-C6CB-48F6-8D8E-9D0D4551B22D}
 		{B487E47E-C37F-402E-B69F-61C689EDC292} = {84040322-C6CB-48F6-8D8E-9D0D4551B22D}
 		{15707D25-5F9E-4411-B705-3DC71B0F1A15} = {84040322-C6CB-48F6-8D8E-9D0D4551B22D}
+		{462F97BB-2E00-457F-9DBB-FAE0B12EB7D7} = {17C3E239-E2A4-427A-9E2E-9206FCD443B4}
 	EndGlobalSection
 EndGlobal
