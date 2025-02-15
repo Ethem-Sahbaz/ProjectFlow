@@ -3,6 +3,7 @@ using ProjectFlow.Contracts.Identity;
 using ProjectFlow.Contracts.Projects;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ProjectFlow.IntegrationTests.EndpointTests;
 public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> factory)
@@ -20,7 +21,51 @@ public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> fac
         Assert.Equal(HttpStatusCode.Unauthorized,result.StatusCode);
     }
 
-    private async Task<string> GetToken()
+    [Fact]
+    public async Task RequestWithTokenAndValidBodyShouldCreateProject()
+    {
+        var token = await GetTokenAsync();
+
+        CreateProjectRequest createProjectRequest = new("Test Project", "No Description", true);
+
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+
+        var result = await _client.PostAsJsonAsync(ApiEndpoints.Projects.Post, createProjectRequest);
+
+        Assert.Equal(HttpStatusCode.Created, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task RequestWithTokenAndEmptyProjectNameShouldReturnBadRequest()
+    {
+        var token = await GetTokenAsync();
+
+        CreateProjectRequest createProjectRequest = new("", "No Description", true);
+
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+
+        var result = await _client.PostAsJsonAsync(ApiEndpoints.Projects.Post, createProjectRequest);
+
+        var content = await result.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    [Fact]
+    public async Task RequestWithTokenAndInvalidJsonShouldReturnBadRequest()
+    {
+        var token = await GetTokenAsync();
+
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+
+        var result = await _client.PostAsJsonAsync(ApiEndpoints.Projects.Post, "{{{adasd}");
+
+        var content = await result.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+    }
+
+    private async Task<string> GetTokenAsync()
     {
         var tokenGenerationRequest = new TokenGenerationRequest()
         {
@@ -31,6 +76,9 @@ public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> fac
         var response = await _client.PostAsJsonAsync(ApiEndpoints.Identity.Token, tokenGenerationRequest);
 
         var token = await response.Content.ReadAsStringAsync();
+
+        // Removes double quotes
+        token = token.Replace("\"",string.Empty);
 
         return token;
 
