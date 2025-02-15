@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace ProjectFlow.IntegrationTests.EndpointTests;
+namespace ProjectFlow.IntegrationTests.EndpointTests.Projects;
 public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> factory)
     : IClassFixture<CustomWebApplicationFactory<Program>>
 {
@@ -18,7 +18,7 @@ public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> fac
 
         var result = await _client.PostAsJsonAsync(ApiEndpoints.Projects.Post, createProjectRequest);
 
-        Assert.Equal(HttpStatusCode.Unauthorized,result.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class CreateProjectEndpointTests(CustomWebApplicationFactory<Program> fac
         var token = await response.Content.ReadAsStringAsync();
 
         // Removes double quotes
-        token = token.Replace("\"",string.Empty);
+        token = token.Replace("\"", string.Empty);
 
         return token;
 
