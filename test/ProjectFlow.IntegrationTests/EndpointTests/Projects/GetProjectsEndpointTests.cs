@@ -1,7 +1,7 @@
 using ProjectFlow.Api.Endpoints;
 using System.Net;
 
-namespace ProjectFlow.IntegrationTests.EndpointTests;
+namespace ProjectFlow.IntegrationTests.EndpointTests.Projects;
 
 public class GetProjectsEndpointTests(CustomWebApplicationFactory<Program> factory)
     : IClassFixture<CustomWebApplicationFactory<Program>>
@@ -13,7 +13,7 @@ public class GetProjectsEndpointTests(CustomWebApplicationFactory<Program> facto
     {
         var response = await _client.GetAsync(ApiEndpoints.Projects.Get);
 
-        Assert.Equal(HttpStatusCode.OK,response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
 }
