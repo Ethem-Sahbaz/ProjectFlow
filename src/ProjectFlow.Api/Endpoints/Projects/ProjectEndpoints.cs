@@ -1,5 +1,4 @@
 ﻿using ProjectFlow.Api.Authentication;
-using ProjectFlow.Api.Endpoints.Projects.Validators;
 using ProjectFlow.Api.Filters;
 using ProjectFlow.Application.Domain.ProjectMembers.Errors;
 using ProjectFlow.Application.Services.Projects.Interfaces;
