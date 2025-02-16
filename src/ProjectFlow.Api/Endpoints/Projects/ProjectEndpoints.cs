@@ -1,4 +1,5 @@
 ﻿using ProjectFlow.Api.Authentication;
+using ProjectFlow.Api.Endpoints.Projects.Validators;
 using ProjectFlow.Api.Filters;
 using ProjectFlow.Application.Domain.ProjectMembers.Errors;
 using ProjectFlow.Application.Services.Projects.Interfaces;
@@ -75,6 +76,7 @@ internal static class ProjectEndpoints
         })
         .WithName("UpdateProject")
         .RequireAuthorization()
+        .AddEndpointFilter<ValidationFilter<UpdateProjectRequest>>()
         .WithOpenApi();
 
         app.MapGet(ApiEndpoints.Projects.GetProjectMembers, async (IProjectMemberReader reader, Guid id) =>
@@ -83,7 +85,7 @@ internal static class ProjectEndpoints
 
             if (membersResult.IsFailure)
             {
-                return Results.BadRequest(membersResult.Error);
+                return Results.NotFound(membersResult.Error);
             }
 
             return Results.Ok(membersResult.Value);
