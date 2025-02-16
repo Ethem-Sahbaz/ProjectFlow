@@ -1,14 +1,9 @@
 ﻿using ProjectFlow.Api.Endpoints;
 using ProjectFlow.Contracts.Identity;
 using ProjectFlow.Contracts.Projects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ProjectFlow.IntegrationTests.EndpointTests.Projects;
 public class DeleteProjectEndpointTests(CustomWebApplicationFactory<Program> factory)
@@ -50,6 +45,18 @@ public class DeleteProjectEndpointTests(CustomWebApplicationFactory<Program> fac
         var deleteResult = await _client.DeleteAsync($"/api/projects/{projectId}");
 
         Assert.Equal(HttpStatusCode.NoContent, deleteResult.StatusCode);
+    }
+
+    [Fact]
+    public async Task NotExistingProjectShoulReturnNotFound()
+    {
+        var token = await GetTokenAsync();
+
+        _client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+
+        var deleteResult = await _client.DeleteAsync($"/api/projects/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.NotFound, deleteResult.StatusCode);
 
     }
 
