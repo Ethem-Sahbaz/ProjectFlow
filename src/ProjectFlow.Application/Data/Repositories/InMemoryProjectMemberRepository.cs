@@ -41,4 +41,11 @@ internal sealed class InMemoryProjectMemberRepository : IProjectMemberRepository
 
         return Task.FromResult(isMember);
     }
+
+    public Task DeleteAsync(Guid projectId, Guid userId)
+    {
+        _projectMembers.RemoveAll(member => member.UserId == userId && member.ProjectId == projectId);
+
+        return Task.CompletedTask;
+    }
 }

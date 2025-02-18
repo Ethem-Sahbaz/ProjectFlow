@@ -12,7 +12,7 @@ using ProjectFlow.Contracts.Projects;
 
 namespace ProjectFlow.Application.Services.Projects;
 internal sealed class ProjectService 
-    : IProjectsReader, IProjectCreator, IProjectMemberReader, IProjectDeleter, IProjectUpdater
+    : IProjectsReader, IProjectCreator, IProjectMemberReader, IProjectDeleter, IProjectUpdater, IProjectMemberDeleter
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectMemberRepository _projectMemberRepository;
@@ -107,6 +107,35 @@ internal sealed class ProjectService
         }
 
         return projectMemberResponses;
+    }
+
+    public async Task<Result> RemoveProjectMemberAsync(Guid projectId, Guid requestUserId, Guid targetUserId)
+    {
+        var user = await _userRepository.GetByIdAsync(targetUserId);
+
+        if (user is null)
+            return Result.Failure(UserErrors.NotFound);
+
+        var project = await _projectRepository.GetByIdAsync(projectId);
+
+        if (project is null)
+            return Result.Failure(ProjectErrors.NotFound);
+
+        var isOwner = await _projectMemberRepository.IsProjectOwnerAsync(projectId, requestUserId);
+
+        var isSameUser = requestUserId == targetUserId;
+
+        if (isSameUser || isOwner)
+        {
+            await _projectMemberRepository.DeleteAsync(projectId, targetUserId);
+
+            return Result.Success();
+        }
+
+        if (!isOwner)
+            return Result.Failure(ProjectMemberErrors.NotOwner);
+
+        return Result.Failure(ProjectMemberErrors.NotAuthorizedMember);
     }
 
     public async Task<Result<ProjectResponse>> UpdateAsync(UpdateProjectRequest request, Guid projectId, Guid userId)

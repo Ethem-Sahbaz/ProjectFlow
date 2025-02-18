@@ -20,6 +20,8 @@ public static class ApiEndpoints
 
         public const string GetProjectMembers = $"{Base}/{{id:guid}}/projectmembers";
 
+        public const string DeleteProjectMember = $"{Base}/{{projectId:guid}}/projectmembers/{{userId:guid}}";
+
         public const string GetJoinRequests = $"{Base}/{{id:guid}}/join-requests";
 
         public const string PostJoinRequest = $"{Base}/{{projectId:guid}}/join-requests/{{requestId:guid}}";
