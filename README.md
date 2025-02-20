@@ -1,9 +1,25 @@
 # Projectflow
 
-Projectflow is a webapplication where users can create public or private projects and other users can join a project. Users that want to join a project can send a join request. The owner of the project can accept or decline the request. After accepting a request the user will be part of the project as a projectmember.
+ProjectFlow is a web application that lets users create public or private projects. Others can request to join a project, and the project owner has the ability to accept or decline these requests. Once accepted, the user becomes a project member.
 
 ## Domain
 
-## Use cases/Features
+This is a high level overview of the current domain:
+
+![Domain Overview](/docs/Images/Domain-Overview.png)
+
+
+## Features
+
+### Project Management
+- Users can create new projects.
+- Project owners can update or delete their projects.
+
+### Membership & Collaboration
+- Users can request to join a project.
+- Project owners can accept or decline join requests.
+- Project members can leave a project at any time.
+- Project owners can remove members from their projects.
+
 
 ## Examples
