@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddSingleton<IProjectsReader, ProjectService>();
         services.AddSingleton<IProjectCreator, ProjectService>();
         services.AddSingleton<IProjectMemberReader, ProjectService>();
+        services.AddSingleton<IProjectMemberDeleter, ProjectService>();
         services.AddSingleton<IProjectDeleter, ProjectService>();
         services.AddSingleton<IProjectUpdater, ProjectService>();
         services.AddSingleton<IProjectJoinRequestCreator, ProjectJoinRequestManager>();
